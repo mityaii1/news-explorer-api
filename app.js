@@ -11,7 +11,9 @@ const app = express();
 app.use(cors());
 
 const { PORT = 3000 } = process.env;
-mongoose.connect('mongodb://localhost:27017/diplomdb', {
+const { MONGO_DB = 'mongodb://localhost:27017/diplomdb' } = process.env;
+
+mongoose.connect(MONGO_DB, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -21,7 +23,7 @@ mongoose.connect('mongodb://localhost:27017/diplomdb', {
 app.use(bodyParser.json());
 app.use(requestLogger);
 
-app.use('/', router);
+app.use(router);
 app.use(errorLogger);
 app.use(errors());
 app.use((err, req, res, next) => {

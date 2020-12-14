@@ -16,7 +16,16 @@ const createArticle = (req, res, next) => {
   Article.create({
     keyword, title, text, date, source, link, image, owner,
   })
-    .then((article) => res.status(200).send(article))
+    .then((article) => res.status(200).send({
+      _id: article._id,
+      keyword: article.keyword,
+      title: article.title,
+      text: article.text,
+      date: article.date,
+      source: article.source,
+      link: article.link,
+      image: article.image,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
@@ -26,14 +35,14 @@ const createArticle = (req, res, next) => {
     });
 };
 const deleteArticle = (req, res, next) => {
-  Article.findById(req.params.articleId)
+  Article.findById(req.params.articleId).select('+owner')
     .orFail(new NotFoundError('Карточка не найдена'))
     .then((article) => {
       if (article.owner.toString() !== req.user._id) {
-        throw new ForbiddenError('Нельзя удалить чужую карточку');
+        throw new ForbiddenError('Нельзя удалить чужую статью');
       } else {
-        Article.findByIdAndRemove(req.params.articleId)
-          .then(() => res.status(200).send(article));
+        article.remove(req.params.articleId)
+          .then(() => res.status(200).send({ message: 'Статья успешно удалена' }));
       }
     })
     .catch(next);

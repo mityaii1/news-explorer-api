@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { validateIsUrl } = require('../utils/validation');
 const { getArticle, createArticle, deleteArticle } = require('../controllers/articles');
 const auth = require('../middlewares/auth');
 
@@ -10,8 +11,8 @@ router.post('/articles', celebrate({
     title: Joi.string().required(),
     text: Joi.string().required(),
     source: Joi.string().required(),
-    image: Joi.string().required(),
-    link: Joi.string().required(),
+    image: Joi.string().required().custom(validateIsUrl),
+    link: Joi.string().required().custom(validateIsUrl),
     date: Joi.date(),
   }),
 }), auth, createArticle);
