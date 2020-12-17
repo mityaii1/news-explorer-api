@@ -4,7 +4,6 @@ const auth = require('../middlewares/auth');
 
 const { getUserInfo, createUser, login } = require('../controllers/users');
 
-router.get('/', auth);
 router.get('/users/me', auth, getUserInfo);
 router.post('/signup', celebrate({
   body: Joi.object().keys({
